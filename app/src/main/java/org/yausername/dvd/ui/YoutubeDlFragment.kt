@@ -12,19 +12,22 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.work.*
 import org.yausername.dvd.R
+import org.yausername.dvd.databinding.FragmentYoutubeDlBinding
 import org.yausername.dvd.work.CommandWorker
 import org.yausername.dvd.work.CommandWorker.Companion.commandKey
-import kotlinx.android.synthetic.main.fragment_youtube_dl.*
+//import kotlinx.android.synthetic.main.fragment_youtube_dl.*
 
 class YoutubeDlFragment : Fragment(), View.OnClickListener {
 
     private var command: String? = null
+    private lateinit var binding:FragmentYoutubeDlBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_youtube_dl, container, false)
+        binding = FragmentYoutubeDlBinding.inflate(layoutInflater, container,false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,13 +36,13 @@ class YoutubeDlFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initViews(view: View) {
-        command_btn.setOnClickListener(this)
+        binding.commandBtn.setOnClickListener(this)
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.command_btn -> {
-                command = command_et.text.toString()
+                command = binding.commandEt.text.toString()
                 if (isStoragePermissionGranted() && !command.isNullOrBlank()) {
                     startCommand(command!!)
                 }

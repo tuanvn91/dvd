@@ -14,14 +14,16 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
-import kotlinx.android.synthetic.main.fragment_downloads.view.*
+//import kotlinx.android.synthetic.main.fragment_downloads.view.*
 import org.yausername.dvd.R
 import org.yausername.dvd.database.Download
+import org.yausername.dvd.databinding.FragmentDownloadsBinding
 import org.yausername.dvd.work.DeleteWorker
 
 class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
     private var mValues: List<Download> = emptyList()
+    private lateinit var binding:FragmentDownloadsBinding
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItems(items: List<Download>) {
@@ -30,28 +32,29 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_downloads, parent, false)
-        return ViewHolder(view)
+        binding = FragmentDownloadsBinding.inflate(LayoutInflater.from(parent.context))
+//        val view = LayoutInflater.from(parent.context)
+//            .inflate(R.layout.fragment_downloads, parent, false)
+        return ViewHolder(binding.root)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
 
         with(holder.itemView) {
-            title_tv.text = item.name
+            binding.titleTv.text = item.name
             @SuppressLint("SetTextI18n")
-            download_percent_tv.text = "${item.downloadedPercent}%"
+            binding.downloadPercentTv.text = "${item.downloadedPercent}%"
             val totalSize = Formatter.formatShortFileSize(context, item.totalSize)
             val downloadedSize = Formatter.formatShortFileSize(context, item.downloadedSize)
             @SuppressLint("SetTextI18n")
-            download_size_tv.text = "${downloadedSize}/${totalSize}"
+            binding.downloadSizeTv.text = "${downloadedSize}/${totalSize}"
             if (item.mediaType == "audio") {
-                format_ic.setImageResource(R.drawable.ic_baseline_audiotrack_24)
+                binding.formatIc.setImageResource(R.drawable.ic_baseline_audiotrack_24)
             } else {
-                format_ic.setImageResource(R.drawable.ic_baseline_video_library_24)
+                binding.formatIc.setImageResource(R.drawable.ic_baseline_video_library_24)
             }
-            item_more.setOnClickListener {
+            binding.itemMore.setOnClickListener {
                 val popupMenu = PopupMenu(context, holder.itemView)
                 val inflater = popupMenu.menuInflater
                 inflater.inflate(R.menu.sub_menu, popupMenu.menu)

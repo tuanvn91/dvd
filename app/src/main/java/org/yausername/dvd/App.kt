@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.IntentFilter
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
@@ -34,7 +35,11 @@ class App : Application() {
                     FFmpeg.getInstance().init(this@App)
                 }
             } catch (e: Exception) {
-                Toast.makeText(applicationContext, R.string.init_failed, Toast.LENGTH_LONG).show()
+                withContext(Dispatchers.Main){
+                    Log.d("tuancon", "eror + " + e.message)
+                    Toast.makeText(applicationContext, R.string.init_failed, Toast.LENGTH_LONG).show()
+                }
+
             }
         }
         registerReceiver(CancelReceiver(), IntentFilter())

@@ -1,5 +1,6 @@
 package org.yausername.dvd.vm
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,6 +41,7 @@ class VidInfoViewModel : ViewModel() {
                     vidInfo = YoutubeDL.getInstance().getInfo(url)
                 }
             } catch (e: Exception) {
+                Log.d("tuancon", "eror + " + e.message)
                 updateLoading(LoadState.LOADED)
                 return@launch
             }

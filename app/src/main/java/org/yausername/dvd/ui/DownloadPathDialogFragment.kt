@@ -9,11 +9,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import org.yausername.dvd.R
-import kotlinx.android.synthetic.main.dialog_fragment_download_path.view.*
+import org.yausername.dvd.databinding.DialogFragmentDownloadPathBinding
+
+//import kotlinx.android.synthetic.main.dialog_fragment_download_path.view.*
 
 class DownloadPathDialogFragment : DialogFragment() {
 
     private lateinit var listener: DialogListener
+    private lateinit var binding:DialogFragmentDownloadPathBinding
 
     interface DialogListener {
         fun onOk(dialog: DownloadPathDialogFragment)
@@ -24,18 +27,18 @@ class DownloadPathDialogFragment : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             val inflater = requireActivity().layoutInflater
-
-            val view = inflater.inflate(R.layout.dialog_fragment_download_path, null)
+            binding = DialogFragmentDownloadPathBinding.inflate(inflater)
+//            val view = inflater.inflate(R.layout.dialog_fragment_download_path, null)
             val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
             val location = sharedPrefs.getString(getString(R.string.download_location_key), null)
             if (location != null) {
                 val docId = DocumentsContract.getTreeDocumentId(Uri.parse(location))
-                docId?.apply { view.download_path_tv.text = docId }
-                    ?: run { view.download_path_tv.text = location }
+                docId?.apply { binding.downloadPathTv.text = docId }
+                    ?: run { binding.downloadPathTv.text = location }
             } else {
-                view.download_path_tv.setText(R.string.val_not_set)
+                binding.downloadPathTv.setText(R.string.val_not_set)
             }
-            builder.setView(view)
+            builder.setView(binding.root)
                 .setIcon(R.drawable.ic_folder_24dp)
                 .setTitle(R.string.download_location_title)
                 .setNegativeButton(R.string.action_choose_folder)

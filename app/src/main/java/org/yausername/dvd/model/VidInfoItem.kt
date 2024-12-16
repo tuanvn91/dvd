@@ -9,10 +9,10 @@ sealed class VidInfoItem {
 
     data class VidFormatItem(val vidInfo: VideoInfo, val formatId: String) : VidInfoItem() {
         override val id = vidInfo.id + "_" + formatId
-        val vidFormat: VideoFormat = vidInfo.formats.find { f -> f.formatId == formatId }!!
+        val vidFormat: VideoFormat = vidInfo.formats!!.find { f -> f.formatId == formatId }!!
     }
 
     data class VidHeaderItem(val vidInfo: VideoInfo) : VidInfoItem() {
-        override val id = vidInfo.id
+        override val id: String = vidInfo.id!!
     }
 }

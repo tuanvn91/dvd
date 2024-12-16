@@ -130,7 +130,7 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             .putExtra("taskId", taskId)
             .putExtra("notificationId", id)
 
-        val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(
             applicationContext,
             channelId
@@ -153,19 +153,17 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            var notificationChannel =
-                notificationManager?.getNotificationChannel(channelId)
-            if (notificationChannel == null) {
-                val channelName = applicationContext.getString(R.string.download_noti_channel_name)
-                notificationChannel = NotificationChannel(
-                    channelId,
-                    channelName, NotificationManager.IMPORTANCE_LOW
-                )
-                notificationChannel.description =
-                    channelName
-                notificationManager?.createNotificationChannel(notificationChannel)
-            }
+        var notificationChannel =
+            notificationManager?.getNotificationChannel(channelId)
+        if (notificationChannel == null) {
+            val channelName = applicationContext.getString(R.string.download_noti_channel_name)
+            notificationChannel = NotificationChannel(
+                channelId,
+                channelName, NotificationManager.IMPORTANCE_LOW
+            )
+            notificationChannel.description =
+                channelName
+            notificationManager?.createNotificationChannel(notificationChannel)
         }
     }
 

@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso
 import org.yausername.dvd.R
 import org.yausername.dvd.adapters.VidInfoAdapter
 import org.yausername.dvd.adapters.VidInfoListener
+import org.yausername.dvd.databinding.FragmentHomeBinding
 import org.yausername.dvd.model.VidInfoItem
 import org.yausername.dvd.vm.LoadState
 import org.yausername.dvd.vm.VidInfoViewModel
@@ -35,13 +36,15 @@ import org.yausername.dvd.work.DownloadWorker.Companion.nameKey
 import org.yausername.dvd.work.DownloadWorker.Companion.sizeKey
 import org.yausername.dvd.work.DownloadWorker.Companion.urlKey
 import org.yausername.dvd.work.DownloadWorker.Companion.vcodecKey
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_home.view.*
+//import kotlinx.android.synthetic.main.fragment_home.*
+//import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.yausername.dvd.work.DownloadWorker.Companion.taskIdKey
 
 
 class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
     DownloadPathDialogFragment.DialogListener {
+
+        private lateinit var binding: FragmentHomeBinding
 
 
     override fun onCreateView(
@@ -49,7 +52,8 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +65,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
     private fun initViews(view: View) {
         val vidFormatsVm =
             ViewModelProvider(activity as MainActivity).get(VidInfoViewModel::class.java)
-        with(view.recyclerview) {
+        with(binding.recyclerview) {
             adapter =
                 VidInfoAdapter(VidInfoListener listener@{
                     vidFormatsVm.selectedItem = it
@@ -76,20 +80,20 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
                 })
         }
         vidFormatsVm.vidFormats.observe(viewLifecycleOwner, Observer { t ->
-            (recyclerview.adapter as VidInfoAdapter).fill(t)
+            (binding.recyclerview.adapter as VidInfoAdapter).fill(t)
         })
         vidFormatsVm.loadState.observe(viewLifecycleOwner, Observer { t ->
             when (t) {
                 LoadState.INITIAL -> {
-                    loading_pb.visibility = GONE
+                    binding.loadingPb.visibility = GONE
                 }
                 LoadState.LOADING -> {
-                    loading_pb.visibility = VISIBLE
-                    start_tv.visibility = GONE
+                    binding.loadingPb.visibility = VISIBLE
+                    binding.startTv.visibility = GONE
                 }
                 LoadState.LOADED -> {
-                    loading_pb.visibility = GONE
-                    start_tv.visibility = GONE
+                    binding.loadingPb.visibility = GONE
+                    binding.startTv.visibility = GONE
                 }
             }
         })
@@ -97,15 +101,15 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
             it?.apply {
                 val picasso = Picasso.get()
                 picasso.load(this)
-                    .into(toolbar_image)
-            } ?: toolbar_image.setImageResource(R.drawable.toolbar)
+                    .into(binding.toolbarImage)
+            } ?: binding.toolbarImage.setImageResource(R.drawable.toolbar)
         })
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.findItem(R.id.search).isVisible = true
         (activity as MainActivity).supportActionBar?.themedContext?.let {
-            val searchView = SearchView(context)
+            val searchView = SearchView(requireContext())
             menu.findItem(R.id.search).actionView = searchView
             searchView.setOnQueryTextListener(this)
         }
@@ -161,7 +165,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         val workTag = vidInfo.id
         val workManager = WorkManager.getInstance(activity?.applicationContext!!)
         val state =
-            workManager.getWorkInfosByTag(workTag).get()?.getOrNull(0)?.state
+            workManager.getWorkInfosByTag(workTag!!).get()?.getOrNull(0)?.state
         val running = state === WorkInfo.State.RUNNING || state === WorkInfo.State.ENQUEUED
         if (running) {
             Toast.makeText(

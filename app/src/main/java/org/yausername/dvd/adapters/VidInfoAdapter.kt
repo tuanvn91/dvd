@@ -11,13 +11,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.yausername.youtubedl_android.mapper.VideoInfo
-import kotlinx.android.synthetic.main.vid_format.view.*
-import kotlinx.android.synthetic.main.vid_header.view.*
+//import kotlinx.android.synthetic.main.vid_format.view.*
+//import kotlinx.android.synthetic.main.vid_header.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.yausername.dvd.R
+import org.yausername.dvd.databinding.VidFormatBinding
+import org.yausername.dvd.databinding.VidHeaderBinding
 import org.yausername.dvd.model.VidInfoItem
 import org.yausername.dvd.utils.NumberUtils
 import java.util.concurrent.TimeUnit
@@ -45,7 +47,7 @@ class VidInfoAdapter(private val clickListener: VidInfoListener) :
                     items.add(
                         VidInfoItem.VidFormatItem(
                             vidInfo,
-                            format.formatId
+                            format.formatId!!
                         )
                     )
                 }
@@ -62,46 +64,47 @@ class VidInfoAdapter(private val clickListener: VidInfoListener) :
             is ViewHolder -> {
                 val vidItem = getItem(position) as VidInfoItem.VidFormatItem
                 val vidFormat = vidItem.vidFormat
-                with(holder.itemView) {
-                    format_tv.text = vidFormat.format
-                    ext_tv.text = vidFormat.ext
-                    size_tv.text = Formatter.formatShortFileSize(context, vidFormat.fileSize)
-                    fps_tv.text = context.getString(R.string.fps_value, vidFormat.fps)
-                    abr_tv.text = context.getString(R.string.abr_value, vidFormat.abr)
-                    if (vidFormat.acodec != "none" && vidFormat.vcodec == "none") {
-                        format_ic.setImageResource(R.drawable.ic_baseline_audiotrack_24)
-                    } else {
-                        format_ic.setImageResource(R.drawable.ic_baseline_video_library_24)
-                    }
-                    item_share.setOnClickListener {
-                        shareUrl(vidFormat.url, context)
-                    }
-                    setOnClickListener { clickListener.onClick(vidItem) }
-                }
+//                with(holder.itemView) {
+//                   holder.bindingAdapter.
+//                    format_tv.text = vidFormat.format
+//                    ext_tv.text = vidFormat.ext
+//                    size_tv.text = Formatter.formatShortFileSize(context, vidFormat.fileSize)
+//                    fps_tv.text = context.getString(R.string.fps_value, vidFormat.fps)
+//                    abr_tv.text = context.getString(R.string.abr_value, vidFormat.abr)
+//                    if (vidFormat.acodec != "none" && vidFormat.vcodec == "none") {
+//                        format_ic.setImageResource(R.drawable.ic_baseline_audiotrack_24)
+//                    } else {
+//                        format_ic.setImageResource(R.drawable.ic_baseline_video_library_24)
+//                    }
+//                    item_share.setOnClickListener {
+//                        shareUrl(vidFormat.url, context)
+//                    }
+//                    setOnClickListener { clickListener.onClick(vidItem) }
+//                }
             }
             else -> {
                 val vidItem = getItem(position) as VidInfoItem.VidHeaderItem
                 val vidInfo = vidItem.vidInfo
-                with(holder.itemView) {
-                    title_tv.text = vidInfo.title
-                    uploader_tv.text = vidInfo.uploader
-                    uploader_tv.isSelected = true
-                    views_tv.text = vidInfo.viewCount?.toLongOrNull()?.let {
-                        NumberUtils.format(it)
-                    } ?: vidInfo.viewCount
-                    likes_tv.text = vidInfo.likeCount?.toLongOrNull()?.let {
-                        NumberUtils.format(it)
-                    } ?: vidInfo.likeCount
-                    dislikes_tv.text = vidInfo.dislikeCount?.toLongOrNull()?.let {
-                        NumberUtils.format(it)
-                    } ?: vidInfo.dislikeCount
-                    upload_date_tv.text = vidInfo.uploadDate
-                    vidInfo.duration.toLong().apply {
-                        val minutes = TimeUnit.SECONDS.toMinutes(this)
-                        val seconds = this - TimeUnit.MINUTES.toSeconds(minutes)
-                        duration_tv.text = context.getString(R.string.duration, minutes, seconds)
-                    }
-                }
+//                with(holder.itemView) {
+//                    title_tv.text = vidInfo.title
+//                    uploader_tv.text = vidInfo.uploader
+//                    uploader_tv.isSelected = true
+//                    views_tv.text = vidInfo.viewCount?.toLongOrNull()?.let {
+//                        NumberUtils.format(it)
+//                    } ?: vidInfo.viewCount
+//                    likes_tv.text = vidInfo.likeCount?.toLongOrNull()?.let {
+//                        NumberUtils.format(it)
+//                    } ?: vidInfo.likeCount
+//                    dislikes_tv.text = vidInfo.dislikeCount?.toLongOrNull()?.let {
+//                        NumberUtils.format(it)
+//                    } ?: vidInfo.dislikeCount
+//                    upload_date_tv.text = vidInfo.uploadDate
+//                    vidInfo.duration.toLong().apply {
+//                        val minutes = TimeUnit.SECONDS.toMinutes(this)
+//                        val seconds = this - TimeUnit.MINUTES.toSeconds(minutes)
+//                        duration_tv.text = context.getString(R.string.duration, minutes, seconds)
+//                    }
+//                }
             }
         }
     }
@@ -115,13 +118,15 @@ class VidInfoAdapter(private val clickListener: VidInfoListener) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ITEM_VIEW_TYPE_HEADER -> HeaderViewHolder.from(
-                parent
-            )
-            ITEM_VIEW_TYPE_ITEM -> ViewHolder.from(
-                parent
-            )
+         when (viewType) {
+            ITEM_VIEW_TYPE_HEADER -> {
+
+                return HeaderViewHolder.from(parent)
+
+            }
+            ITEM_VIEW_TYPE_ITEM -> {
+                return ViewHolder.from(parent)
+            }
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
     }
@@ -133,26 +138,28 @@ class VidInfoAdapter(private val clickListener: VidInfoListener) :
         }
     }
 
-    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class HeaderViewHolder(binding: VidHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
         companion object {
             fun from(parent: ViewGroup): HeaderViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.vid_header, parent, false)
+                val binding = VidHeaderBinding.inflate(layoutInflater)
+//                val view = layoutInflater.inflate(R.layout.vid_header, parent, false)
                 return HeaderViewHolder(
-                    view
+                    binding
                 )
             }
         }
     }
 
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(binding:VidFormatBinding) : RecyclerView.ViewHolder(binding.root) {
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.vid_format, parent, false)
-                return ViewHolder(view)
+//                val view = layoutInflater.inflate(R.layout.vid_format, parent, false)
+                val binding = VidFormatBinding.inflate(layoutInflater)
+                return ViewHolder(binding)
             }
         }
     }

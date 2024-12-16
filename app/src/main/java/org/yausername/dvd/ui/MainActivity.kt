@@ -16,37 +16,40 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.setupWithNavController
 import org.yausername.dvd.R
+import org.yausername.dvd.databinding.ActivityMainBinding
 import org.yausername.dvd.vm.VidInfoViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import org.yausername.dvd.utils.URLUtils.cleanUrl
 
 class MainActivity : AppCompatActivity(), NavActivity {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
         val navController = findNavController(R.id.nav_host_fragment)
 
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.home_fragment,
-                R.id.downloads_fragment,
-                R.id.youtube_dl_fragment
-            ), drawer_layout
-        )
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+//        appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.home_fragment,
+//                R.id.downloads_fragment,
+//                R.id.youtube_dl_fragment
+//            ), binding.drawerLayout
+//        )
+//        binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         supportActionBar?.title = navController.currentDestination?.label
-        bottom_view?.setupWithNavController(navController)
-        nav_view?.setupWithNavController(navController)
+        binding.bottomView?.setupWithNavController(navController)
+//        binding.navView?.setupWithNavController(navController)
 
-        handleIntent(intent)
+//        handleIntent(intent)
 
     }
 
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity(), NavActivity {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val navController = Navigation.findNavController(
             this,
             R.id.nav_host_fragment
@@ -70,21 +73,21 @@ class MainActivity : AppCompatActivity(), NavActivity {
     }
 
     override fun hideNav() {
-        drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        bottom_view?.visibility = View.GONE
+//        binding.drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        binding.bottomView?.visibility = View.GONE
     }
 
     override fun showNav() {
-        drawer_layout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-        bottom_view?.visibility = View.VISIBLE
+//        binding.drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        binding.bottomView?.visibility = View.VISIBLE
     }
 
     override fun showOptions() {
-        toolbar.menu.iterator().forEach { it.isVisible = true }
+        binding.toolbar.menu.iterator().forEach { it.isVisible = true }
     }
 
     override fun hideOptions() {
-        toolbar.menu.iterator().forEach { it.isVisible = false }
+        binding.toolbar.menu.iterator().forEach { it.isVisible = false }
     }
 
     private fun handleIntent(intent: Intent) {
