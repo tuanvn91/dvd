@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 class VidInfoViewModel : ViewModel() {
 
-    val vidFormats: MutableLiveData<VideoInfo> = MutableLiveData()
+    val vidFormats: MutableLiveData<VideoInfo?> = MutableLiveData()
     val loadState: MutableLiveData<LoadState> = MutableLiveData(LoadState.INITIAL)
     val thumbnail: MutableLiveData<String> = MutableLiveData()
     lateinit var selectedItem: VidInfoItem.VidFormatItem
